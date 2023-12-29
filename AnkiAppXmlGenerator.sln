@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnkiAppXmlGenerator", "AnkiAppXmlGenerator.csproj", "{AD9F90B0-9A60-4691-AFF2-01FDEA838B77}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD9F90B0-9A60-4691-AFF2-01FDEA838B77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD9F90B0-9A60-4691-AFF2-01FDEA838B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD9F90B0-9A60-4691-AFF2-01FDEA838B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD9F90B0-9A60-4691-AFF2-01FDEA838B77}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {802A92D3-6DDF-4BA7-AC19-3603B52AFE66}
+	EndGlobalSection
+EndGlobal

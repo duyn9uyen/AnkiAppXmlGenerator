@@ -47,9 +47,7 @@ class Program
         Console.WriteLine(flashDeck);
 
         // Write xml string to a new file.
-        using (StreamWriter outputFile = new StreamWriter(Path.Combine(filepath, outputFileName)))
-        {
-            outputFile.WriteLine(flashDeck);
-        }
+        using StreamWriter outputFile = new StreamWriter(Path.Combine(filepath, outputFileName));
+        outputFile.WriteLine(flashDeck);
     }
 }
