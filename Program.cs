@@ -1,17 +1,33 @@
-﻿using System.Xml.Linq;
+﻿using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace AnkiAppXmlGenerator;
 class Program
 {
-    static string Filepath = "files";
-    static string OutputFileName = "";
-    static string? DeckName;
+    static string Filepath { get; set; } = "files";
+    static string? OutputFileName { get; set; }
+    static string? DeckName { get; set; }
+
+    //TODO: There is a bug with this regex when parsing CSV files with quotes around commas
+    // works:  my english text, tiếng Việt, my notes here
+    // works (will add an empty note): more english text, tiếng Việt
+    // does not work because the second field is in quotes: "(comma example) dear friend, I'm home", "bạn thân mến, tôi đang ở nhà", more notes here
+    //(Consider using a CSV parser library instead of regex.)
+    static readonly string SplitRegex = @"(?:,)|(['""].+['""])(?:,)";
 
     static void Main(string[] args)
     {
         var source = ReadFile();
 
         var modifiedData = EditData(source);
+
+        var originalFields = Regex.Split(source[0], SplitRegex)
+                                    //.Where(x => !string.IsNullOrEmpty(x))
+                                    .ToList();
+
+        var modifiedFields = Regex.Split(modifiedData[0], SplitRegex)
+                                    .Where(x => !string.IsNullOrEmpty(x))
+                                    .ToArray();
 
         if(DeckName is null)
             throw new Exception("DeckName can't be null");
@@ -24,7 +40,10 @@ class Program
             ),
             new XElement("cards",
                 from str in modifiedData
-                let fields = str.Split(',')
+                //let fields = str.Split(',')
+                let fields = Regex.Split(str, SplitRegex)
+                                    .Where(x => !string.IsNullOrEmpty(x))
+                                    .ToArray()
                 select new XElement("card",
                     new XElement("field", new XAttribute("name", "Front"),
                         new XElement("tts", fields[0])
@@ -46,8 +65,8 @@ class Program
         // Column 1 is the English word
         // Column 2 is the Vietnamese word
         string inputFilename = "new-vocab.csv";
-        //DeckName = "myDeckName";
 
+        //DeckName = "myDeckName";
         Console.WriteLine("Enter name of deck:  ");
         DeckName = Console.ReadLine();
         if(String.IsNullOrEmpty(DeckName))
@@ -68,12 +87,18 @@ class Program
 
         foreach (var row in datarows)
         {
-            var originalFields = row.Split(',').ToList();
+            // var originalFields = row.Split(",");
+
+            var originalFields = Regex.Split(row, SplitRegex)
+                                    .Where(x => !string.IsNullOrEmpty(x))
+                                    .Select(y => y.Trim())
+                                    .ToList();
 
             if (originalFields.Count == 2)
             {
-                // missing the third note field, so let's add an empty string.
-                originalFields.Add("");
+                // missing the third note field, so let's add an empty note.
+                // TODO: We need to have a space here, otherwise it will get stripped
+                originalFields.Add(" ");
             }
 
             // can use the inbuilt string.Join() method
