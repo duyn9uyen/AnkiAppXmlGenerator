@@ -8,29 +8,25 @@ class Program
     static string? OutputFileName { get; set; }
     static string? DeckName { get; set; }
 
-    //TODO: There is a bug with this regex when parsing CSV files with quotes around commas
-    // works:  my english text, tiếng Việt, my notes here
-    // works (will add an empty note): more english text, tiếng Việt
-    // does not work because the second field is in quotes: "(comma example) dear friend, I'm home", "bạn thân mến, tôi đang ở nhà", more notes here
-    //(Consider using a CSV parser library instead of regex.)
-    static readonly string SplitRegex = @"(?:,)|(['""].+['""])(?:,)";
+    //TODO: Consider using a CSV parser library instead of regex. Can be buggy.
+
+    static readonly string SplitRegex = @"(?:,)|(['""][^""]*['""])(?:,)";
 
     static void Main(string[] args)
     {
         var source = ReadFile();
 
-        var modifiedData = EditData(source);
+        var modifiedData = AddEmptyNotesField(source);
 
-        var originalFields = Regex.Split(source[0], SplitRegex)
-                                    //.Where(x => !string.IsNullOrEmpty(x))
-                                    .ToList();
+        // var originalFields = Regex.Split(source[0], SplitRegex)
+        //                             .ToList();
 
-        var modifiedFields = Regex.Split(modifiedData[0], SplitRegex)
-                                    .Where(x => !string.IsNullOrEmpty(x))
-                                    .ToArray();
+        // var modifiedFields = Regex.Split(modifiedData[0], SplitRegex)
+        //                             .Where(x => !string.IsNullOrEmpty(x))
+        //                             .ToArray();
 
         if(DeckName is null)
-            throw new Exception("DeckName can't be null");
+            throw new Exception($"{DeckName} can't be null");
 
         XElement flashDeck = new XElement("deck", new XAttribute("name", DeckName),
             new XElement("fields",
@@ -69,8 +65,8 @@ class Program
         //DeckName = "myDeckName";
         Console.WriteLine("Enter name of deck:  ");
         DeckName = Console.ReadLine();
-        if(String.IsNullOrEmpty(DeckName))
-            throw new Exception("deckname is required");
+        if(DeckName is null)
+            throw new Exception($"{DeckName} is required");
 
         OutputFileName = $"{DeckName}.xml";
 
@@ -81,7 +77,7 @@ class Program
         return datarows;
     }
 
-    static List<string> EditData(string[] datarows)
+    static List<string> AddEmptyNotesField(string[] datarows)
     {
         List<string> modifiedData = new();
 
@@ -90,8 +86,8 @@ class Program
             // var originalFields = row.Split(",");
 
             var originalFields = Regex.Split(row, SplitRegex)
-                                    .Where(x => !string.IsNullOrEmpty(x))
-                                    .Select(y => y.Trim())
+                                    .Select(x => x.Trim())
+                                    .Where(match => !string.IsNullOrEmpty(match))
                                     .ToList();
 
             if (originalFields.Count == 2)
@@ -115,8 +111,15 @@ class Program
     {
         Console.WriteLine(flashDeck);
 
-        // Write xml string to a new file.
-        using StreamWriter outputFile = new StreamWriter(Path.Combine(Filepath, OutputFileName));
-        outputFile.WriteLine(flashDeck);
+        if(OutputFileName is null)
+        {
+            throw new Exception($"{OutputFileName} can't be null");
+        }
+        else
+        {
+            // Write xml string to a new file.
+            using StreamWriter outputFile = new StreamWriter(Path.Combine(Filepath, OutputFileName));
+            outputFile.WriteLine(flashDeck);
+        }
     }
 }
