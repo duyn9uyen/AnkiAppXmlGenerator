@@ -2,28 +2,24 @@
 using System.Xml.Linq;
 
 namespace AnkiAppXmlGenerator;
+
+static public class Constants
+{
+    //TODO: Consider using a CSV parser library instead of regex. Can be buggy.
+    public static readonly string SplitRegex = @"(?:,)|(['""][^""]*['""])(?:,)*";
+}
+
 class Program
 {
     static string Filepath { get; set; } = "files";
     static string? OutputFileName { get; set; }
     static string? DeckName { get; set; }
 
-    //TODO: Consider using a CSV parser library instead of regex. Can be buggy.
-
-    static readonly string SplitRegex = @"(?:,)|(['""][^""]*['""])(?:,)";
-
     static void Main(string[] args)
     {
         var source = ReadFile();
 
         var modifiedData = AddEmptyNotesField(source);
-
-        // var originalFields = Regex.Split(source[0], SplitRegex)
-        //                             .ToList();
-
-        // var modifiedFields = Regex.Split(modifiedData[0], SplitRegex)
-        //                             .Where(x => !string.IsNullOrEmpty(x))
-        //                             .ToArray();
 
         if(DeckName is null)
             throw new Exception($"{DeckName} can't be null");
@@ -37,7 +33,7 @@ class Program
             new XElement("cards",
                 from str in modifiedData
                 //let fields = str.Split(',')
-                let fields = Regex.Split(str, SplitRegex)
+                let fields = Regex.Split(str, Constants.SplitRegex)
                                     .Where(x => !string.IsNullOrEmpty(x))
                                     .ToArray()
                 select new XElement("card",
@@ -85,7 +81,7 @@ class Program
         {
             // var originalFields = row.Split(",");
 
-            var originalFields = Regex.Split(row, SplitRegex)
+            var originalFields = Regex.Split(row, Constants.SplitRegex)
                                     .Select(x => x.Trim())
                                     .Where(match => !string.IsNullOrEmpty(match))
                                     .ToList();
