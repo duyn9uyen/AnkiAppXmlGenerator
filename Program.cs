@@ -37,13 +37,9 @@ class Program
                                     .Where(x => !string.IsNullOrEmpty(x))
                                     .ToArray()
                 select new XElement("card",
-                    new XElement("field", new XAttribute("name", "Front"),
-                        new XElement("tts", fields[0])
-                    ),
-                    new XElement("field", new XAttribute("name", "Back"),
-                        new XElement("tts", fields[1])
-                    ),
-                    new XElement("field", fields[2], new XAttribute("name", "Notes"))
+                    new XElement("tts", "", new XAttribute("name", "Front"), fields[0]),
+                    new XElement("tts", "", new XAttribute("name", "Back"), fields[1]),
+                    new XElement("text", "", new XAttribute("name", "Notes"), fields[2])
                 )
             )
         );
