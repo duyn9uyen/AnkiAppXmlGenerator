@@ -32,18 +32,13 @@ class Program
             ),
             new XElement("cards",
                 from str in modifiedData
-                //let fields = str.Split(',')
                 let fields = Regex.Split(str, Constants.SplitRegex)
                                     .Where(x => !string.IsNullOrEmpty(x))
                                     .ToArray()
                 select new XElement("card",
-                    new XElement("field", new XAttribute("name", "Front"),
-                        new XElement("tts", fields[0])
-                    ),
-                    new XElement("field", new XAttribute("name", "Back"),
-                        new XElement("tts", fields[1])
-                    ),
-                    new XElement("field", fields[2], new XAttribute("name", "Notes"))
+                    new XElement("tts", fields[0], new XAttribute("name", "Front")),
+                    new XElement("tts", fields[1], new XAttribute("name", "Back")),
+                    new XElement("text", fields[2], new XAttribute("name", "Notes"))
                 )
             )
         );
@@ -79,8 +74,6 @@ class Program
 
         foreach (var row in datarows)
         {
-            // var originalFields = row.Split(",");
-
             var originalFields = Regex.Split(row, Constants.SplitRegex)
                                     .Select(x => x.Trim())
                                     .Where(match => !string.IsNullOrEmpty(match))
@@ -89,7 +82,6 @@ class Program
             if (originalFields.Count == 2)
             {
                 // missing the third note field, so let's add an empty note.
-                // TODO: We need to have a space here, otherwise it will get stripped
                 originalFields.Add(" ");
             }
 
