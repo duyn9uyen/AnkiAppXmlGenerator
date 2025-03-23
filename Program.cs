@@ -11,7 +11,7 @@ static public class Constants
 
 class Program
 {
-    static string Filepath { get; set; } = "files";
+    static readonly string ProjectRoot = Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
     static string? OutputFileName { get; set; }
     static string? DeckName { get; set; }
 
@@ -21,7 +21,7 @@ class Program
 
         var modifiedData = AddEmptyNotesField(source);
 
-        if(DeckName is null)
+        if (DeckName is null)
             throw new Exception($"{DeckName} can't be null");
 
         XElement flashDeck = new XElement("deck", new XAttribute("name", DeckName),
@@ -56,14 +56,14 @@ class Program
         //DeckName = "myDeckName";
         Console.WriteLine("Enter name of deck:  ");
         DeckName = Console.ReadLine();
-        if(DeckName is null)
+        if (DeckName is null)
             throw new Exception($"{DeckName} is required");
 
         OutputFileName = $"{DeckName}.xml";
 
         Console.WriteLine($"Reading File: '{inputFilename}'\n");
 
-        string[] datarows = File.ReadAllLines(Path.Combine(Filepath, inputFilename));
+        string[] datarows = File.ReadAllLines(Path.Combine(ProjectRoot, "files", inputFilename));
 
         return datarows;
     }
@@ -99,14 +99,14 @@ class Program
     {
         Console.WriteLine(flashDeck);
 
-        if(OutputFileName is null)
+        if (OutputFileName is null)
         {
             throw new Exception($"{OutputFileName} can't be null");
         }
         else
         {
             // Write xml string to a new file.
-            using StreamWriter outputFile = new StreamWriter(Path.Combine(Filepath, OutputFileName));
+            using StreamWriter outputFile = new StreamWriter(Path.Combine(ProjectRoot, "files", OutputFileName));
             outputFile.WriteLine(flashDeck);
         }
     }
